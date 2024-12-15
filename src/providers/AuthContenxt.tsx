@@ -16,6 +16,7 @@ import {
   useEffect,
 } from "react";
 import { ethers } from "ethers";
+import { ContractAbi } from "@/utils/ContractAbi";
 
 interface AuthContextType {
   isLoggedIn: boolean;
@@ -24,9 +25,13 @@ interface AuthContextType {
   signer: ethers.Signer | null;
   login: () => Promise<void>;
   logout: () => void;
+  mintCertificate: (walletAddress: string, ipfsHash: string) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
+const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
+const ownerAddress = process.env.NEXT_PUBLIC_OWNER_ADDRESS;
+
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -34,6 +39,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [signer, setSigner] = useState<ethers.Signer | null>(null);
   const [signature, setSignature] = useState<string | null>(null); // Estado para a assinatura
   const [tokens, setTokens] = useState<string[]>([]);
+  
+  const getContractInstance = async () => {
+    if (!isLoggedIn) {
+      login();
+    }
+    
+    if (!contractAddress) {
+      throw new Error("Contract address is not defined");
+    }
+    const contract = new ethers.Contract(contractAddress, ContractAbi, signer);
+  
+    return contract;
+  };
 
   const login = async () => {
     if (window.ethereum) {
@@ -44,6 +62,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         });
         if (accounts && accounts.length > 0) {
           const selectedAccount = accounts[0];
+          // if(selectedAccount != ownerAddress) return;
           setAccount(selectedAccount);
 
           // Obtém o provedor e o signer
@@ -74,6 +93,19 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setSigner(null);
   };
 
+  const mintCertificate = async (walletAddress: string, ipfsHash: string) => {
+    try {
+      const contract = await getContractInstance();
+      const tx = await contract.safeMint(walletAddress, ipfsHash);
+      await tx.wait();
+      console.log(`Certificate sucessefully sent to ${walletAddress} - Tx: ${tx.hash}`); 
+      return true;
+    } catch (error) {
+      console.error(`Error in tx to ${walletAddress}:`, error);
+      return false;
+    }
+  }
+
   useEffect(() => {
     const checkWalletConnection = async () => {
       if (window.ethereum) {
@@ -97,7 +129,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ isLoggedIn, account, signer, signature, login, logout }}
+      value={{ isLoggedIn, account, signer, signature, login, logout, mintCertificate }}
     >
       {children}
     </AuthContext.Provider>
