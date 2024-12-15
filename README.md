@@ -1,36 +1,14 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+## Solution
+Web3EduBrasil-Certifier is a solution that leverages tokenized certificates on-chain, relaying on OPstack due to the low gas fees and fast tx processing. This certifier platform is designed for [Web3EduBrasil community](https://discord.gg/GJk58TPaDx), that is Brazil community with more than 600 active members focused in teach about Web3 technologies. Having a Web3 based certfication provides to the community and the users more adoption and an incentive to interact with Web3 technologies.
 
-## Getting Started
+## How to be eligible for the certification?
+To be eligible for an certificate on-chain the user must have an account on [Web3EduBrasil-Platform](https://web3edubrasil.vercel.app/) and finish an mentorship program or workshop or course (We'll provide an NFT ceretificate for those who met all requirements)
 
-First, run the development server:
+## What makes It unique?
+In Brazil we don't have an Tokenized Certifier, in order to fill this gap our solutions aims to certifie not only the commmunity programs but also college extension hours, on-site courses, and bootcamps.By certifing other programs We will require an
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
-
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
-
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
-
-## Learn More
-
-To learn more about Next.js, take a look at the following resources:
-
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
-
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
-
-## Deploy on Vercel
-
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Project Stack
+- Solidity Smart Contract deployed on Optimism Sepolia for PoC (sooner is going to be on mainnet)
+- Firebase for access the whitelisted users for each program
+- IPFS to store the certificate metadata
+- Ether.js for cotract interaction
