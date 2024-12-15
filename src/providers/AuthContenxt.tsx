@@ -31,7 +31,8 @@ interface AuthContextType {
   ) => Promise<any>;
   mintCertificate: (
     walletAddress: string,
-    ipfsHash: string
+    ipfsHash: string,
+    program: string
   ) => Promise<boolean>;
 }
 
@@ -45,6 +46,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [signer, setSigner] = useState<ethers.Signer | null>(null);
   const [signature, setSignature] = useState<string | null>(null); // Estado para a assinatura
   const [tokens, setTokens] = useState<string[]>([]);
+
+  const updateMint = async (program: string, address: string, tx: string) => {
+    try {
+      fetch("/api/user/update", {
+        method: "POST",
+        body: JSON.stringify({
+          programId: program,
+          address: address,
+          tx: tx,
+        }),
+      });
+    } catch (error) {
+      console.error("Error updating mint status:", error);
+    }
+  }
 
   const getContractInstance = async () => {
     if (!isLoggedIn) {
@@ -131,14 +147,20 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setSigner(null);
   };
 
-  const mintCertificate = async (walletAddress: string, ipfsHash: string) => {
+  const mintCertificate = async (walletAddress: string, ipfsHash: string, program: string) => {
     try {
       const contract = await getContractInstance();
       const tx = await contract.safeMint(walletAddress, ipfsHash);
-      await tx.wait();
+      const receipt = await tx.wait();
+
+      if (receipt.status !== 1) {
+        throw new Error("Transaction failed");
+      }
+
       console.log(
-        `Certificate sucessefully sent to ${walletAddress} - Tx: ${tx.hash}`
+        `Certificate sucessefully sent to ${walletAddress}\n RECEIPT${JSON.stringify(receipt)}`
       );
+      updateMint(program, walletAddress, tx.hash);
       return true;
     } catch (error) {
       console.error(`Error in tx to ${walletAddress}:`, error);

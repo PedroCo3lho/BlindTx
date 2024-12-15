@@ -86,7 +86,7 @@ export const Certifier = ({
   }
 
   async function handleMint() {
-    mintCertificate(address, metadata);
+    mintCertificate(address, metadata, programId);
   }
 
   function testef() {}
