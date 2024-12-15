@@ -7,6 +7,7 @@ import { MotionButton } from "../ui/Button";
 import { Input } from "../ui/Input";
 import { TextArea } from "../ui/Textarea";
 import { IoSend } from "react-icons/io5";
+import { toast, ToastContentProps } from "react-toastify";
 
 export const Certifier = ({
   programId,
@@ -86,7 +87,26 @@ export const Certifier = ({
   }
 
   async function handleMint() {
-    mintCertificate(address, metadata, programId);
+    const promise = mintCertificate(address, metadata, programId)
+      .then((response) => {
+        return response.message || "Canceled!";
+      })
+      .catch((error) => {
+        throw error.message || "An error occurred during the mint.";
+      });
+    toast.promise(promise, {
+      pending: "Sending...",
+      success: {
+        render({ data }: ToastContentProps<string>) {
+          return data;
+        },
+      },
+      error: {
+        render({ data }: ToastContentProps<string>) {
+          return data;
+        },
+      },
+    });
   }
 
   function testef() {}
@@ -142,7 +162,13 @@ export const Certifier = ({
         </div>
         <div className="flex items-center justify-center gap-4">
           <MotionButton
-            func={() => fetchMetadata()}
+            func={() =>
+              toast.promise(fetchMetadata(), {
+                pending: "Generating...",
+                success: "Metadata generated!",
+                error: "Error.",
+              })
+            }
             label="Generate Metadata"
             type="button"
             className="bg-green border-none text-black"
@@ -166,16 +192,19 @@ export const Certifier = ({
         />
         <div className="w-full flex-grow bg-[#F8F6F6] drop-shadow-2xl rounded-2xl flex flex-col items-center py-6 gap-4 overflow-hidden">
           <p className="text-2xl font-bold h-fit">Certificate requests</p>
-          <div className="w-full h-full flex flex-col gap-2 px-5 overflow-y-auto">
+          <div className="w-full h-full flex flex-col gap-2 px-5 py-2 overflow-y-auto">
             {requestsList.length !== 0 ? (
               requestsList.map((e: any, index: any) => {
                 return (
                   <MotionDiv
                     key={index}
-                    className="w-full h-20 rounded-lg flex gap-4 outline-none items-center justify-between bg-ccgray rounded-box shadow-lg px-6 text-neutral font-bold cursor-pointer transition-[border] duration-1000"
+                    className={`w-full h-20 rounded-lg flex gap-4 outline-none items-center justify-between bg-ccgray rounded-box shadow-lg px-6 text-neutral font-bold cursor-pointer transition-[border] duration-1000 ${
+                      e.minted === true ? "border border-green" : ""
+                    }`}
                     func={() => handleRequestClick(e)}
                   >
                     {e.name}
+                    {e.minted ? <p className="text-green">Minted</p> : <></>}
                   </MotionDiv>
                 );
               })

@@ -4,6 +4,8 @@ import "./globals.css";
 import { Metadata } from "next";
 import { AuthProvider } from "../providers/AuthContenxt";
 import NavBar from "@/components/NavBar/NavBar";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 const LexendDeca = Lexend_Deca({
   subsets: ["latin"],
@@ -26,6 +28,18 @@ export default function RootLayout({
         <body
           className={`${LexendDeca.className} bg-white flex flex-col justify-start items-center border text-black border-black h-screen`}
         >
+          <ToastContainer
+            position="top-center"
+            autoClose={2500}
+            hideProgressBar={false}
+            newestOnTop={false}
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="light"
+          />
           <NavBar />
           {children}
         </body>

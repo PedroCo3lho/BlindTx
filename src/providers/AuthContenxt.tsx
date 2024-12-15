@@ -33,7 +33,7 @@ interface AuthContextType {
     walletAddress: string,
     ipfsHash: string,
     program: string
-  ) => Promise<boolean>;
+  ) => Promise<any>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -49,7 +49,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const updateMint = async (program: string, address: string, tx: string) => {
     try {
-      fetch("/api/user/update", {
+      const response = await fetch("/api/user/update", {
         method: "POST",
         body: JSON.stringify({
           programId: program,
@@ -57,10 +57,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           tx: tx,
         }),
       });
+      if (response.ok) {
+        return "Minted";
+      }
     } catch (error) {
       console.error("Error updating mint status:", error);
     }
-  }
+  };
 
   const getContractInstance = async () => {
     if (!isLoggedIn) {
@@ -147,7 +150,11 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     setSigner(null);
   };
 
-  const mintCertificate = async (walletAddress: string, ipfsHash: string, program: string) => {
+  const mintCertificate = async (
+    walletAddress: string,
+    ipfsHash: string,
+    program: string
+  ) => {
     try {
       const contract = await getContractInstance();
       const tx = await contract.safeMint(walletAddress, ipfsHash);
@@ -158,10 +165,12 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
 
       console.log(
-        `Certificate sucessefully sent to ${walletAddress}\n RECEIPT${JSON.stringify(receipt)}`
+        `Certificate sucessefully sent to ${walletAddress}\n RECEIPT${JSON.stringify(
+          receipt
+        )}`
       );
-      updateMint(program, walletAddress, tx.hash);
-      return true;
+      const response = await updateMint(program, walletAddress, tx.hash);
+      return response;
     } catch (error) {
       console.error(`Error in tx to ${walletAddress}:`, error);
       return false;
