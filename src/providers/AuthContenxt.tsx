@@ -25,6 +25,10 @@ interface AuthContextType {
   signer: ethers.Signer | null;
   login: () => Promise<void>;
   logout: () => void;
+  generateIpfsHash: (
+    certificateImage: string,
+    description: string
+  ) => Promise<any>;
   mintCertificate: (
     walletAddress: string,
     ipfsHash: string
@@ -57,9 +61,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   const generateIpfsHash = async (
     certificateImage: string,
-    userName: string,
-    programName: string,
-    hours: number
+    description: string
   ) => {
     try {
       const response1 = await fetch(
@@ -67,14 +69,13 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         {
           method: "POST",
           headers: {
-            Authorization:
-              "Bearer " + process.env.NEXT_PUBLIC_PINATA_JWT,
+            Authorization: "Bearer " + process.env.NEXT_PUBLIC_PINATA_JWT,
             "Content-Type": "application/json",
           },
           body: JSON.stringify({
             pinataContent: {
               image: certificateImage,
-              description: `Este certificado é concedido a ${userName} em reconhecimento por completar com sucesso a trilha de aprendizagem ${programName}, totalizando uma carga horária de ${hours} horas`,
+              description: description,
             },
           }),
         }
@@ -173,6 +174,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
         account,
         signer,
         signature,
+        generateIpfsHash,
         login,
         logout,
         mintCertificate,

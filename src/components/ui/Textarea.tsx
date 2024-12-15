@@ -16,6 +16,7 @@ export const TextArea = ({
       value={value}
       onChange={(e) => setContent(e.target.value)}
       placeholder={placeholder}
+      disabled
       className={`input input-bordered bg-white rounded-2xl border-2 border-gray text-dgray p-3 resize-none ${className}`}
     />
   );

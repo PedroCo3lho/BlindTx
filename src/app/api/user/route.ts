@@ -17,8 +17,8 @@ export const GET = async (req: NextRequest) => {
     const docSnap = await getDoc(programDocRef);
 
     if (docSnap.exists()) {
-      const users = docSnap.data()?.users;
-      return new NextResponse(JSON.stringify(users), { status: 200 });
+      const res = docSnap.data();
+      return new NextResponse(JSON.stringify(res), { status: 200 });
     } else {
       return new NextResponse(
         JSON.stringify({ message: "Program not found" }),

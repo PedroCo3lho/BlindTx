@@ -15,11 +15,23 @@ export const Certifier = ({
   programId: any;
   programName: any;
 }) => {
-  const { isLoggedIn, login, logout, account, signer, signature } = useAuth();
+  const {
+    isLoggedIn,
+    login,
+    logout,
+    account,
+    signer,
+    signature,
+    generateIpfsHash,
+    mintCertificate,
+  } = useAuth();
   const [email, setEmail] = useState("");
   const [username, setUsername] = useState("");
   const [address, setAddress] = useState("");
   const [description, setDesc] = useState("");
+  const [hours, setHours] = useState(0);
+  const [metadata, setMetadata] = useState("");
+  const [ipfsImage, setIpfsImage] = useState("");
   const [requestsList, setRequests] = useState([]);
 
   async function fetchProgramUsers() {
@@ -40,7 +52,9 @@ export const Certifier = ({
       }
 
       const data = await response.json();
-      setRequests(data);
+      setRequests(data.users);
+      setHours(data.hours);
+      setIpfsImage(data.ipfsImage);
     } catch (error) {
       console.error(error);
       throw error;
@@ -50,6 +64,14 @@ export const Certifier = ({
     setEmail(request.email);
     setAddress(request.address);
     setUsername(request.name);
+
+    setDesc(
+      `This certificate is awarded to ${
+        request.name
+      } in recognition of successfully completing the ${decodeURIComponent(
+        programName
+      )} learning track, totaling a workload of ${hours} hours.`
+    );
   };
 
   useEffect(() => {
@@ -57,6 +79,15 @@ export const Certifier = ({
       fetchProgramUsers();
     }
   });
+
+  async function fetchMetadata() {
+    const res = await generateIpfsHash(ipfsImage, description);
+    setMetadata(res);
+  }
+
+  async function handleMint() {
+    mintCertificate(address, metadata);
+  }
 
   function testef() {}
   return (
@@ -95,19 +126,36 @@ export const Certifier = ({
             <TextArea
               setContent={setDesc}
               placeholder="Description..."
-              className="h-44"
+              className="h-32"
               value={description}
             />
           </div>
+          <div className="flex flex-col w-full">
+            <p className="pl-2 font-bold text-lg">Metadata</p>
+            <TextArea
+              setContent={setMetadata}
+              placeholder="Metadata..."
+              className="h-32"
+              value={metadata}
+            />
+          </div>
         </div>
-        <MotionButton
-          func={testef}
-          label="Send"
-          Icon={IoSend}
-          rightIcon={true}
-          type="button"
-          className="bg-green border-none text-black"
-        />
+        <div className="flex items-center justify-center gap-4">
+          <MotionButton
+            func={() => fetchMetadata()}
+            label="Generate Metadata"
+            type="button"
+            className="bg-green border-none text-black"
+          />
+          <MotionButton
+            func={() => handleMint()}
+            label="Send"
+            Icon={IoSend}
+            rightIcon={true}
+            type="button"
+            className="bg-green border-none text-black"
+          />
+        </div>
       </div>
       <div className="min-w-96 h-full flex flex-col gap-4 ">
         <MotionButton
