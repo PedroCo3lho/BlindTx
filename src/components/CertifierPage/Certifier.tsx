@@ -7,7 +7,7 @@ import { MotionButton } from "../ui/Button";
 import { Input } from "../ui/Input";
 import { TextArea } from "../ui/Textarea";
 import { IoSend } from "react-icons/io5";
-import { toast, ToastContentProps } from "react-toastify";
+import { toast } from "react-toastify";
 
 export const Certifier = ({
   programId,
@@ -87,26 +87,7 @@ export const Certifier = ({
   }
 
   async function handleMint() {
-    const promise = mintCertificate(address, metadata, programId)
-      .then((response) => {
-        return response.message || "Canceled!";
-      })
-      .catch((error) => {
-        throw error.message || "An error occurred during the mint.";
-      });
-    toast.promise(promise, {
-      pending: "Sending...",
-      success: {
-        render({ data }: ToastContentProps<string>) {
-          return data;
-        },
-      },
-      error: {
-        render({ data }: ToastContentProps<string>) {
-          return data;
-        },
-      },
-    });
+    mintCertificate(address, metadata, programId);
   }
 
   function testef() {}

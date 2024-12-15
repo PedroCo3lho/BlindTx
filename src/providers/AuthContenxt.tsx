@@ -17,6 +17,7 @@ import {
 } from "react";
 import { ethers } from "ethers";
 import { ContractAbi } from "@/utils/ContractAbi";
+import { Bounce, toast } from "react-toastify";
 
 interface AuthContextType {
   isLoggedIn: boolean;
@@ -57,9 +58,6 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           tx: tx,
         }),
       });
-      if (response.ok) {
-        return "Minted";
-      }
     } catch (error) {
       console.error("Error updating mint status:", error);
     }
@@ -156,6 +154,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     program: string
   ) => {
     try {
+      toast("Sending...", {
+        position: "top-center",
+        autoClose: 2000,
+        hideProgressBar: false,
+        closeOnClick: true,
+        pauseOnHover: true,
+        draggable: true,
+        progress: undefined,
+        theme: "colored",
+        transition: Bounce,
+      });
       const contract = await getContractInstance();
       const tx = await contract.safeMint(walletAddress, ipfsHash);
       const receipt = await tx.wait();
@@ -169,8 +178,21 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           receipt
         )}`
       );
-      const response = await updateMint(program, walletAddress, tx.hash);
-      return response;
+      updateMint(program, walletAddress, tx.hash);
+      if (receipt.status === 1) {
+        toast.success("Minted!", {
+          position: "top-center",
+          autoClose: 5000,
+          hideProgressBar: false,
+          closeOnClick: true,
+          pauseOnHover: true,
+          draggable: true,
+          progress: undefined,
+          theme: "light",
+          transition: Bounce,
+        });
+        return "Minted!";
+      }
     } catch (error) {
       console.error(`Error in tx to ${walletAddress}:`, error);
       return false;
