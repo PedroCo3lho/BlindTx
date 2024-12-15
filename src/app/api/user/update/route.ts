@@ -2,7 +2,7 @@ import { doc, updateDoc, arrayUnion, getDoc } from "firebase/firestore";
 import { db } from "@/firebase/config";
 import { NextRequest, NextResponse } from "next/server";
 
-export const POST = async (req: NextRequest, res: NextResponse) => {
+export const POST = async (req: NextRequest) => {
   try {
     const { programId, address, tx } = await req.json();
     if (!programId || !address) {
