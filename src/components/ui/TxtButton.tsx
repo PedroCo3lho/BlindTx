@@ -1,4 +1,6 @@
+import { MotionButtonProps, TextButtonProps } from "@/interfaces/interfaces";
 import { motion } from "framer-motion";
+import Image from "next/image";
 
 export const TxtButton = ({
   label,
@@ -7,10 +9,10 @@ export const TxtButton = ({
   className,
   func,
   Icon,
-}: MotionButtonProps<void>) => {
+}: TextButtonProps<void>) => {
   return (
     <motion.button
-      className={` px-4 py-2 text-[#e8fffb] shadow-lg text-xl ${className} `}
+      className={` px-4 py-2 text-black text-xl ${className} `}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       transition={{
@@ -26,7 +28,7 @@ export const TxtButton = ({
           {Icon ? (
             <div className="flex items-center justify-center gap-2">
               <p className="truncate">{label}</p>
-              <Icon className="w-4 h-4" />
+              <Image alt="" className="h-8 w-auto" src={Icon} />
             </div>
           ) : (
             <p className="truncate">{label}</p>
@@ -36,7 +38,7 @@ export const TxtButton = ({
         <>
           {Icon ? (
             <div className="flex items-center justify-center gap-2">
-              <Icon className="w-4 h-4" />
+              <Image alt="" className="h-8 w-auto" src={Icon} />
               <p className="truncate">{label}</p>
             </div>
           ) : (

@@ -1,3 +1,4 @@
+import { MotionButtonProps } from "@/interfaces/interfaces";
 import { motion } from "framer-motion";
 
 export const MotionButton = ({
@@ -10,7 +11,7 @@ export const MotionButton = ({
 }: MotionButtonProps<void>) => {
   return (
     <motion.button
-      className={` px-4 py-2 rounded-box text-[#e8fffb] shadow-lg border-[#e8fffb] border rounded-3xl border text-xl ${className} `}
+      className={` px-4 py-2 rounded-2xl text-base-content shadow-lg ${className} `}
       whileHover={{ scale: 1.05 }}
       whileTap={{ scale: 0.95 }}
       transition={{
