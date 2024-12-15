@@ -25,13 +25,15 @@ interface AuthContextType {
   signer: ethers.Signer | null;
   login: () => Promise<void>;
   logout: () => void;
-  mintCertificate: (walletAddress: string, ipfsHash: string) => Promise<boolean>;
+  mintCertificate: (
+    walletAddress: string,
+    ipfsHash: string
+  ) => Promise<boolean>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const contractAddress = process.env.NEXT_PUBLIC_CONTRACT_ADDRESS;
 const ownerAddress = process.env.NEXT_PUBLIC_OWNER_ADDRESS;
-
 
 export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -39,17 +41,17 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
   const [signer, setSigner] = useState<ethers.Signer | null>(null);
   const [signature, setSignature] = useState<string | null>(null); // Estado para a assinatura
   const [tokens, setTokens] = useState<string[]>([]);
-  
+
   const getContractInstance = async () => {
     if (!isLoggedIn) {
       login();
     }
-    
+
     if (!contractAddress) {
       throw new Error("Contract address is not defined");
     }
     const contract = new ethers.Contract(contractAddress, ContractAbi, signer);
-  
+
     return contract;
   };
 
@@ -98,13 +100,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       const contract = await getContractInstance();
       const tx = await contract.safeMint(walletAddress, ipfsHash);
       await tx.wait();
-      console.log(`Certificate sucessefully sent to ${walletAddress} - Tx: ${tx.hash}`); 
+      console.log(
+        `Certificate sucessefully sent to ${walletAddress} - Tx: ${tx.hash}`
+      );
       return true;
     } catch (error) {
       console.error(`Error in tx to ${walletAddress}:`, error);
       return false;
     }
-  }
+  };
 
   useEffect(() => {
     const checkWalletConnection = async () => {
@@ -129,7 +133,15 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
 
   return (
     <AuthContext.Provider
-      value={{ isLoggedIn, account, signer, signature, login, logout, mintCertificate }}
+      value={{
+        isLoggedIn,
+        account,
+        signer,
+        signature,
+        login,
+        logout,
+        mintCertificate,
+      }}
     >
       {children}
     </AuthContext.Provider>

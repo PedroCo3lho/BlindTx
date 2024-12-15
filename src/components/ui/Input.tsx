@@ -2,6 +2,7 @@ interface InputProps<T> {
   setContent: (param: string) => T;
   value?: string;
   placeholder?: string;
+  mutable?: boolean;
 }
 
 export const Input = ({ setContent, placeholder, value }: InputProps<void>) => {
@@ -11,6 +12,7 @@ export const Input = ({ setContent, placeholder, value }: InputProps<void>) => {
       onChange={(e) => setContent(e.target.value)}
       type="text"
       placeholder={placeholder}
+      disabled
       className="w-full md:h-10 h-8 px-4 bg-white rounded-2xl border-2 border-gray text-dgray"
     />
   );
