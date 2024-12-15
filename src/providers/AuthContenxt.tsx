@@ -55,6 +55,41 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
     return contract;
   };
 
+  const generateIpfsHash = async (
+    certificateImage: string,
+    userName: string,
+    programName: string,
+    hours: number
+  ) => {
+    try {
+      const response1 = await fetch(
+        "https://api.pinata.cloud/pinning/pinJSONToIPFS",
+        {
+          method: "POST",
+          headers: {
+            Authorization:
+              "Bearer " + process.env.NEXT_PUBLIC_PINATA_JWT,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            pinataContent: {
+              image: certificateImage,
+              description: `Este certificado é concedido a ${userName} em reconhecimento por completar com sucesso a trilha de aprendizagem ${programName}, totalizando uma carga horária de ${hours} horas`,
+            },
+          }),
+        }
+      );
+
+      const data = await response1.json();
+      const IpfsHash = data.IpfsHash;
+      console.log(IpfsHash);
+      return IpfsHash;
+    } catch (error: any) {
+      console.error("Erro na requisição fetchTrailAirDrop:", error);
+      throw error;
+    }
+  };
+
   const login = async () => {
     if (window.ethereum) {
       try {
